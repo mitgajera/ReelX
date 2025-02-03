@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const MONGODB_URL = process.env.MONGODB_URL!;
+const MONGODB_URI = process.env.MONGODB_URI!;
 
-if(!MONGODB_URL){
-    throw new Error("MONGODB_URL is not defined");
+if(!MONGODB_URI){
+    throw new Error("MONGODB_URI is not defined");
 }
 
 let cached = global.mongoose;
@@ -13,7 +13,6 @@ if(!cached){
 }
 
 export async function dbConnect() {
-
     if(!cached.promise){
         const opts = {
             bufferCommands: true,
@@ -21,13 +20,20 @@ export async function dbConnect() {
         }
 
         cached.promise = mongoose
-        .connect(MONGODB_URL, opts)
-        .then(() => mongoose.connection);
+        .connect(MONGODB_URI, opts)
+        .then((mongoose) => {
+            return mongoose.connection;
+        })
+        .catch((error) => {
+            console.error("Database connection error:", error);
+            throw error;
+        });
     } 
 
     try {
         cached.conn = await cached.promise;
     } catch (error) {
+        console.error("Error with cached connection:", error);
         cached.promise = null;
         throw error;
     }

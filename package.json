@@ -11,9 +11,10 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "mongoose": "^8.9.6",
-    "next": "15.1.6",
+    "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "turbopack": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
