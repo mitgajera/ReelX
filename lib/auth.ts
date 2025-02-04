@@ -58,24 +58,50 @@ export const authOptions: NextAuthOptions = {
     ],
 
     callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id
+        async signIn({ account, profile }) {
+            if (account?.provider === "google") {
+                try {
+                    await dbConnect();
+                    const userExists = await User.findOne({ email: profile?.email });
+                    
+                    if (!userExists && profile?.email) {
+                        await User.create({
+                            email: profile.email,
+                            provider: "google"
+                        });
+                    }
+                    return true;
+                } catch (error) {
+                    console.error("Error during Google sign in:", error);
+                    return false;
+                }
             }
-            return token
+            return true;
+        },
+
+        async jwt({ token, user, account, profile }) {
+            if (account?.provider === "google") {
+                if (user) {
+                    token.id = user.id;
+                }
+                token.image = profile?.image;
+            }
+            return token;
         },
 
         async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id as string
+                session.user.id = token.id as string;
+                session.user.image = token.image as string;
             }
-            return session
+            return session;
         }
     },
 
     pages: {
         signIn: "/login",
-        error: "/login"
+        error: "/login",
+        signOut: "/login"
     },
 
     session: {
