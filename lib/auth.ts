@@ -67,6 +67,7 @@ export const authOptions: NextAuthOptions = {
                     if (!userExists && profile?.email) {
                         await User.create({
                             email: profile.email,
+                            name: profile.name,
                             provider: "google"
                         });
                     }
@@ -84,6 +85,7 @@ export const authOptions: NextAuthOptions = {
                 if (user) {
                     token.id = user.id;
                 }
+                token.name = profile?.name;
                 token.image = profile?.image;
             }
             return token;
@@ -92,6 +94,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
+                session.user.name = token.name;
                 session.user.image = token.image as string;
             }
             return session;

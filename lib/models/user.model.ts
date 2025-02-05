@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 export interface User {
     email: string;
+    name?: string;
     password?: string;
     provider?: string;
     _id?: mongoose.Types.ObjectId;
@@ -18,6 +19,11 @@ const userSchema = new Schema<User>(
             unique: true
         },
         
+        name: {
+            type: String,
+            required: false
+        },
+
         password: {
             type: String,
             required: false
