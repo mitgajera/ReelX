@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 export interface User {
     email: string;
-    name?: string;
+    username: string; // New field for username
     password?: string;
     provider?: string;
     _id?: mongoose.Types.ObjectId;
@@ -19,9 +19,17 @@ const userSchema = new Schema<User>(
             unique: true
         },
         
-        name: {
+        username: {
             type: String,
-            required: false
+            required: true,
+            unique: true,
+            lowercase: true, // Ensure username is in lowercase
+            validate: {
+                validator: function(v: string) {
+                    return /^[a-z0-9]+$/.test(v); // Only allow lowercase letters and numbers
+                },
+                message: props => `${props.value} is not a valid username!`
+            }
         },
 
         password: {
@@ -41,7 +49,7 @@ userSchema.pre("save", async function(next) {
     if(this.isModified("password") && this.password) {
         this.password = await bcrypt.hash(this.password, 12);
     }
-    next()
+    next();
 });
 
 const User = models?.User || model<User>("User", userSchema);
