@@ -3,7 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { dbConnect } from "./db";
 import User from "./models/user.model";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+import nodemailer from 'nodemailer';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -113,4 +114,23 @@ export const authOptions: NextAuthOptions = {
     },
 
     secret: process.env.NEXTAUTH_SECRET
+}
+
+export async function sendOtp(email: string, otp: string) {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail', // Use your email service
+        auth: {
+            user: process.env.EMAIL_USER, // Your email address
+            pass: process.env.EMAIL_PASS, // Your email password
+        },
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is ${otp}. It is valid for 1 hour.`,
+    };
+
+    await transporter.sendMail(mailOptions);
 }
