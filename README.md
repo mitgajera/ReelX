@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReelX
+
+ReelX is a short video application built with Next.js, allowing users to upload, share, and manage their video content seamlessly.
+
+## Features
+- User authentication (login, register, password reset)
+- Video uploading and thumbnail management
+- User profiles to manage uploaded and liked videos
+- Explore feed to discover new content
 
 ## Getting Started
 
@@ -34,3 +42,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Contributing
+
+If you'd like to contribute to the project, please fork the repository and submit a pull request. Your feedback and contributions are welcome!
