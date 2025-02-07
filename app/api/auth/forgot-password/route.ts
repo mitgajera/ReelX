@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import User from "'@lib/models/user.model.ts'";
-import send
+import User from "@/lib/models/user.model";
+import { sendOtp } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
     try {

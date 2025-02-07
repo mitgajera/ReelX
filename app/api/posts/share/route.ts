@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Post from "@lib/models/post.model.ts";
+import Post from "@/lib/models/post.model";
 
 export async function POST(req: NextRequest) {
     try {
