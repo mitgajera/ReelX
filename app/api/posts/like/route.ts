@@ -20,13 +20,21 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        post.likes += 1; // Increment the like count
-        await post.save();
-
-        return NextResponse.json(
-            { message: "Post liked successfully", likes: post.likes },
-            { status: 200 }
-        );
+        if (post.likes.includes(userId)) {
+            post.likes = post.likes.filter((id: string) => id !== userId);
+            await post.save();
+            return NextResponse.json(
+                { message: "Like removed successfully", likes: post.likes.length },
+                { status: 200 }
+            );
+        } else {
+            post.likes.push(userId);
+            await post.save();
+            return NextResponse.json(
+                { message: "Post liked successfully", likes: post.likes.length },
+                { status: 200 }
+            );
+        }
 
     } catch (error) {
         return NextResponse.json(

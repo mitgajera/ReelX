@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Logic for sharing the post can be implemented here
         return NextResponse.json(
             { message: "Post shared successfully" },
             { status: 200 }
