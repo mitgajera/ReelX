@@ -1,28 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import Post from "@/lib/models/post.model";
+import Video from "@/lib/models/video.model";
+import { dbConnect } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
     try {
-        const { postId, userId } = await req.json();
+        await dbConnect(); // Ensure the database connection is established
 
-        if (!postId || !userId) {
+        const { title, description, videoUrl, thumbnailUrl, userId } = await req.json();
+
+        if (!title || !description || !videoUrl || !thumbnailUrl || !userId) {
             return NextResponse.json(
-                { error: "Post ID and User ID are required" },
+                { error: "All fields are required" },
                 { status: 400 }
             );
         }
 
-        const post = await Post.findById(postId);
-        if (!post) {
-            return NextResponse.json(
-                { error: "Post not found" },
-                { status: 404 }
-            );
-        }
+        const newVideo = new Video({
+            title,
+            description,
+            videoUrl,
+            thumbnailUrl,
+            userId,
+        });
+
+        await newVideo.save();
 
         return NextResponse.json(
-            { message: "Post shared successfully" },
-            { status: 200 }
+            { message: "Video uploaded successfully", video: newVideo },
+            { status: 201 }
         );
 
     } catch (error) {

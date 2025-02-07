@@ -14,7 +14,8 @@ interface FileUploadProps {
 export default function FileUpload({
     onSuccess,
     onProgress,
-    fileType = "image"
+    fileType = "video"
+
 }: FileUploadProps) {
 
     const [uploading, setUploading] = React.useState(false);
@@ -72,7 +73,8 @@ export default function FileUpload({
     return (
         <div className="space-y-2">
             <IKUpload
-                fileName={fileType === "video" ? "video" : "image"}
+                fileName={fileType === "video" ? "video" : "thumbnail"}
+
                 useUniqueFileName={true}
                 responseFields={["tags"]}
                 validateFile={validateFile}
@@ -86,7 +88,8 @@ export default function FileUpload({
                 onSuccess={handleSuccess}
                 onUploadProgress={handleProgress}
                 onUploadStart={handleStartUpload}
-                accept={fileType === "video" ? "video/*" : "image/*"}
+                accept={fileType === "video" ? "video/*" : "image/*, .jpg, .jpeg, .png"}
+
                 className="file-input file-input-bordered w=full"
                 transformation={{
                     pre: "l-text,i-Imagekit,fs-50,l-end",

@@ -4,18 +4,12 @@ import GoogleProvider from "next-auth/providers/google";
 import { dbConnect } from "@/lib/db";
 import User from "@/lib/models/user.model";
 import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
-    const body = await req.json();
-    const { email, password } = body;
-
-    await dbConnect();
-    const user = await User.findOne({ email });
-    if (user && await bcrypt.compare(password, user.password)) {
-        return { id: user._id, email: user.email };
-    }
-    return null;
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    throw new Error("Missing Google OAuth credentials in .env");
+}
+if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error("Missing NEXTAUTH_SECRET in .env");
 }
 
 export const authOptions = {
@@ -26,13 +20,25 @@ export const authOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" }
             },
-            async authorize(request: credentials) {
-                return await POST(request);
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("Email and password are required.");
+                }
+
+                await dbConnect();
+                const user = await User.findOne({ email: credentials.email });
+
+                if (!user) throw new Error("User not found.");
+
+                const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+                if (!isPasswordValid) throw new Error("Invalid credentials.");
+
+                return { id: user._id.toString(), email: user.email };
             }
         }),
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET
         })
     ],
     pages: {
@@ -41,10 +47,12 @@ export const authOptions = {
         signOut: "/login"
     },
     session: {
-        strategy: "jwt",
+        strategy: "jwt" as const,
         maxAge: 30 * 24 * 60 * 60
     },
     secret: process.env.NEXTAUTH_SECRET
 };
 
-export default NextAuth(authOptions);
+// API route for authentication
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
